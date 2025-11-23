@@ -8,8 +8,7 @@ const db = mysql.createConnection({
   port : '3308'
 });
 
-
-db.connect((err) => {
+db.connect(err => {
   if (err) {
     console.error('❌ Gagal konek ke database:', err);
   } else {
