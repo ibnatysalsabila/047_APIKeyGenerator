@@ -1,5 +1,5 @@
 Api Key Generate User
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/21cf837e-9e23-4a1a-9acc-ad3829752cc9" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f9422e8f-d591-45b6-bede-715fd9fd3c8b" />
 
 Registrasi Admin
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e79223a7-6407-4d5b-a0f2-67080b9411d4" />
