@@ -55,6 +55,7 @@ h1 {
     margin-bottom: 15px;
     animation: bounce 2s infinite;
 }
+
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
     40% { transform: translateY(-12px); }
@@ -62,6 +63,26 @@ h1 {
 }
 
 .form-group { width: 100%; }
+
+/* Password with eye icon */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.toggle-pass {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0.7;
+}
+
+.toggle-pass:hover {
+    opacity: 1;
+}
 
 input {
     width: 100%;
@@ -122,6 +143,7 @@ button:hover { transform: translateY(-2px); }
 </style>
 </head>
 <body>
+
 <div class="container">
     <div class="logo">🔑</div>
     <h1 id="formTitle">Admin Login</h1>
@@ -129,16 +151,25 @@ button:hover { transform: translateY(-2px); }
     <div id="message" class="message"></div>
 
     <div class="form-group" id="formFields">
+
         <input id="email" type="email" placeholder="Email Admin">
-        <input id="password" type="password" placeholder="Password">
-        <input id="confirm_password" type="password" placeholder="Konfirmasi Password" style="display:none;">
+
+        <div class="password-wrapper">
+            <input id="password" type="password" placeholder="Password">
+            <span class="toggle-pass" onclick="togglePassword('password', this)">👁</span>
+        </div>
+
+        <div class="password-wrapper" id="confirmWrap" style="display:none;">
+            <input id="confirm_password" type="password" placeholder="Konfirmasi Password">
+            <span class="toggle-pass" onclick="togglePassword('confirm_password', this)">👁</span>
+        </div>
+
     </div>
 
     <div class="form-group" id="formActions">
         <button id="mainButton" onclick="handleLogin()">LOGIN</button>
         <button id="toggleButton" onclick="toggleForm()">Belum punya akun? Registrasi</button>
 
-        <!-- BUTTON BACK KE INDEX -->
         <button id="backButton" onclick="goBack()">⬅ Kembali ke Halaman Utama</button>
     </div>
 </div>
@@ -149,12 +180,25 @@ const formTitle = document.getElementById('formTitle');
 const pageTitle = document.getElementById('pageTitle');
 const mainButton = document.getElementById('mainButton');
 const toggleButton = document.getElementById('toggleButton');
-const confirmPasswordInput = document.getElementById('confirm_password');
 const messageDiv = document.getElementById('message');
+const confirmWrap = document.getElementById('confirmWrap');
 
 // 🔙 Fungsi kembali ke index.html
 function goBack() {
     window.location.href = "index.html";
+}
+
+// 👁 Toggle password
+function togglePassword(id, icon) {
+    const input = document.getElementById(id);
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.textContent = "🙈";
+    } else {
+        input.type = "password";
+        icon.textContent = "👁";
+    }
 }
 
 function toggleForm() {
@@ -167,14 +211,14 @@ function toggleForm() {
         mainButton.textContent = "REGISTER";
         mainButton.setAttribute('onclick', 'handleRegister()');
         toggleButton.textContent = "Kembali ke Login";
-        confirmPasswordInput.style.display = 'block';
+        confirmWrap.style.display = 'block';
     } else {
         formTitle.textContent = "Admin Login";
         pageTitle.textContent = "Admin Login";
         mainButton.textContent = "LOGIN";
         mainButton.setAttribute('onclick', 'handleLogin()');
         toggleButton.textContent = "Belum punya akun? Registrasi";
-        confirmPasswordInput.style.display = 'none';
+        confirmWrap.style.display = 'none';
     }
 }
 
@@ -238,5 +282,6 @@ async function handleRegister() {
     }
 }
 </script>
+
 </body>
 </html>
