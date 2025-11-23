@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Berry Sweet</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Indie+Flower&display=swap');
+
+        :root {
+            --primary-purple: #8A2BE2;
+            --light-purple: #B19CD9;
+            --pastel-blue: #ADD8E6;
+            --cloud-white: #F0F8FF;
+            --text-dark: #333366;
+            --card-bg: #FFFFFF;
+            --shadow-light: rgba(138, 43, 226, 0.15);
+            --border-radius: 15px;
+        }
+
+        body {
+            font-family: 'Comfortaa', sans-serif;
+            background: linear-gradient(135deg, var(--pastel-blue) 0%, var(--cloud-white) 50%, var(--light-purple) 100%);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px var(--shadow-light);
+        }
+
+        h1 {
+            font-family: 'Comfortaa', sans-serif;
+            color: var(--primary-purple);
+            font-weight: 700;
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            background: #FF6347; /* Tomato Red */
+            color: #fff;
+            transition: background 0.3s ease;
+        }
+        .logout-btn:hover { background: #E55337; }
+
+        .section-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px var(--shadow-light);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--primary-purple);
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-purple);
+        }
+
+        th {
+            background: var(--pastel-blue);
+            color: var(--text-dark);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background: var(--cloud-white);
+        }
+        
+        button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            background: #FF6347;
+            color: #fff;
+            transition: opacity 0.3s;
+        }
+        button:hover { opacity: 0.8; }
+        
+        .status-active { color: green; font-weight: 700; }
+        .status-inactive { color: orange; font-weight: 700; }
+        
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Admin Dashboard</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="section-container">
+        <h2>👥 User List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>FULL NAME</th>
+                    <th>EMAIL</th>
+                    <th>START DATE</th> 
+                    <th>API KEY IDs</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody id="userListBody">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="section-container">
+        <h2>🔑 API Key List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>SERVICE NAME</th>
+                    <th>API KEY</th>
+                    <th>CREATED AT</th>
+                    <th>EXPIRES AT</th> 
+                    <th>STATUS</th>
+                    <th>ASSIGNED TO</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody id="apiKeyListBody">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        // --- UTILITY FUNCTIONS ---
+        function logout() {
+            // Logika logout: redirect ke halaman login
+            alert("Anda berhasil Logout.");
+            window.location.href = 'login.html'; 
+        }
+
+        // Fungsi untuk memformat tanggal dari database
+        function formatDate(dateString, isDateOnly = false) {
+            if (!dateString) return 'N/A';
+            try {
+                const date = new Date(dateString);
+                
+                // Cek apakah tanggal valid
+                if (isNaN(date)) return 'N/A'; 
+                
+                if (isDateOnly) {
+                    // Hanya tanggal (untuk start_date/expires_at)
+                    return date.toLocaleDateString('id-ID'); 
+                }
+                // Tanggal dan waktu (untuk created_at)
+                return date.toLocaleString('id-ID');
+            } catch (e) {
+                return 'N/A';
+            }
+        }
+        
+        // --- 1. USER LIST LOGIC ---
+        async function loadUserList() {
+            const userListBody = document.getElementById('userListBody');
+            userListBody.innerHTML = '<tr><td colspan="6">Memuat data...</td></tr>';
+            
+            try {
+                const response = await fetch('/admin/users');
+                const users = await response.json();
+
+                userListBody.innerHTML = ''; 
+                if (response.ok && Array.isArray(users)) {
+                    users.forEach(user => {
+                        const row = userListBody.insertRow();
+                        
+                        row.insertCell().textContent = user.id;
+
+                        // Merangkai nama menggunakan 'firstname' dan 'lastname'
+                        const fullName = user.firstname && user.lastname 
+                                         ? `${user.firstname} ${user.lastname}` 
+                                         : 'N/A'; 
+                        row.insertCell().textContent = fullName;
+                        
+                        row.insertCell().textContent = user.email;
+
+                        // 💡 PERBAIKAN: Memastikan Start Date diolah sebagai tanggal saja
+                        // Jika data di DB NULL, akan tetap N/A. Solusi adalah mengisi DB dengan data baru.
+                        row.insertCell().textContent = formatDate(user.start_date, true);
+
+                        row.insertCell().textContent = user.assigned_keys || 'N/A';
+
+                        const actionCell = row.insertCell();
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = 'Hapus';
+                        deleteBtn.onclick = () => deleteUser(user.id);
+                        actionCell.appendChild(deleteBtn);
+                    });
+                } else {
+                    console.error('Gagal memuat user:', users.error || 'Server error.');
+                    userListBody.innerHTML = '<tr><td colspan="6">Gagal memuat data pengguna.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error jaringan saat memuat user:', error);
+                userListBody.innerHTML = '<tr><td colspan="6">Error koneksi server.</td></tr>';
+            }
+        }
+        
+        // ... (Fungsi deleteUser sama) ...
+        async function deleteUser(userId) {
+            if (!confirm(`Yakin ingin menghapus User ID ${userId}? Semua API Key terkait akan terhapus.`)) return;
+            try {
+                const response = await fetch(`/admin/users/${userId}`, { method: 'DELETE' });
+                const data = await response.json();
+                if (data.success) {
+                    alert('User berhasil dihapus!');
+                    loadUserList(); 
+                    loadApiKeyList(); 
+                } else {
+                    alert(`Gagal menghapus user: ${data.message}`);
+                }
+            } catch (error) {
+                alert('Gagal menghubungi server untuk menghapus user.');
+            }
+        }
+
+
+        // --- 2. API KEY LIST LOGIC ---
+        async function loadApiKeyList() {
+            const apiKeyListBody = document.getElementById('apiKeyListBody');
+            apiKeyListBody.innerHTML = '<tr><td colspan="8">Memuat data...</td></tr>';
+            
+            try {
+                const response = await fetch('/admin/apikeys');
+                const keys = await response.json();
+
+                apiKeyListBody.innerHTML = ''; 
+                if (response.ok && Array.isArray(keys)) {
+                    keys.forEach(key => {
+                        const row = apiKeyListBody.insertRow();
+                        
+                        row.insertCell().textContent = key.id;
+                        row.insertCell().textContent = key.service_name;
+                        row.insertCell().textContent = key.api_key;
+                        row.insertCell().textContent = formatDate(key.created_at);
+                        
+                        // 💡 MENAMPILKAN EXPIRES AT (diolah sebagai tanggal saja)
+                        row.insertCell().textContent = formatDate(key.expires_at, true);
+                        
+                        // Kolom Status (Mengambil nilai default 'active' dari DB jika tidak diset, tapi fallback ke 'inactive')
+                        // Status dari DB: key.status harusnya 'active' atau 'inactive'
+                        const statusText = key.status || 'active'; // Asumsi default adalah active
+                        const statusCell = row.insertCell();
+                        statusCell.textContent = statusText.toUpperCase();
+                        statusCell.className = statusText.toLowerCase() === 'active' ? 'status-active' : 'status-inactive';
+
+                        row.insertCell().textContent = key.assigned_to || 'N/A';
+
+                        // Kolom Action
+                        const actionCell = row.insertCell();
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = 'Hapus';
+                        deleteBtn.onclick = () => deleteApiKey(key.id);
+                        actionCell.appendChild(deleteBtn);
+                    });
+                } else {
+                    console.error('Gagal memuat key:', keys.error || 'Server error.');
+                    apiKeyListBody.innerHTML = '<tr><td colspan="8">Gagal memuat data API Key.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error jaringan saat memuat key:', error);
+                apiKeyListBody.innerHTML = '<tr><td colspan="8">Error koneksi server.</td></tr>';
+            }
+        }
+        
+        // ... (Fungsi deleteApiKey sama) ...
+        async function deleteApiKey(keyId) {
+            if (!confirm(`Yakin ingin menghapus API Key ID ${keyId}?`)) return;
+
+            try {
+                const response = await fetch(`/admin/apikeys/${keyId}`, { method: 'DELETE' });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('API Key berhasil dihapus!');
+                    loadApiKeyList(); 
+                    loadUserList();
+                } else {
+                    alert(`Gagal menghapus API Key: ${data.message}`);
+                }
+            } catch (error) {
+                alert('Gagal menghubungi server untuk menghapus API Key.');
+            }
+        }
+
+
+        // Panggil fungsi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserList();
+            loadApiKeyList();
+        });
+    </script>
+</body>
+</html>

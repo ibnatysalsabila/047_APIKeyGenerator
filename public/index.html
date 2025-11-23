@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☁️ API Key Generator</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Indie+Flower&display=swap');
+
+        :root {
+            --primary-purple: #8A2BE2; 
+            --light-purple: #B19CD9; 
+            --pastel-blue: #ADD8E6;  
+            --cloud-white: #F0F8FF;  
+            --text-dark: #333366;    
+            --card-bg: #FFFFFF;
+            --shadow-light: rgba(138, 43, 226, 0.15); 
+            --border-radius: 15px;
+        }
+
+        body {
+            font-family: 'Comfortaa', sans-serif;
+            background: linear-gradient(135deg, var(--pastel-blue) 0%, var(--cloud-white) 50%, var(--light-purple) 100%);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .main-container {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px var(--shadow-light);
+            width: 800px; 
+            max-width: 95%;
+            overflow: hidden; 
+            min-height: 500px;
+        }
+
+        /* Side Panel (Kanan - Tombol Navigasi Saja) */
+        .side-panel {
+            flex: 1; 
+            background: linear-gradient(160deg, var(--primary-purple), var(--light-purple));
+            padding: 40px 20px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .side-panel .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--cloud-white);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 12px 25px; 
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background 0.3s;
+            width: 80%; 
+            max-width: 200px; 
+            box-shadow: none;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        .side-panel .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: none;
+        }
+
+
+        /* Content Panel (Kiri - untuk form) */
+        .content-panel {
+            flex: 2; 
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .content-panel h2 {
+            color: var(--primary-purple);
+            font-size: 1.8rem;
+            margin-bottom: 0;
+            border-bottom: 2px dashed var(--pastel-blue);
+            padding-bottom: 10px;
+        }
+
+        /* Form Styling */
+        input, select, textarea {
+            width: calc(100% - 24px); 
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--light-purple);
+            background: var(--cloud-white);
+            color: var(--text-dark);
+            font-family: 'Comfortaa', sans-serif;
+            font-size: 15px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+            margin-bottom: 10px; 
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 5px rgba(138, 43, 226, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        button.primary-btn {
+            width: 100%; 
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px; 
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            background: var(--primary-purple);
+            color: #fff;
+            box-shadow: 0 4px 10px var(--shadow-light);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        button.primary-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            background: #6A1BAA; 
+        }
+
+        .copy-btn {
+            background: var(--pastel-blue);
+            color: var(--text-dark);
+            border: 1px solid var(--light-purple);
+            box-shadow: none;
+            width: 100%; 
+            padding: 8px 15px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .copy-btn:hover { background-color: #A0D0EF; transform: none; }
+        
+        textarea {
+            height: 60px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            color: var(--primary-purple);
+        }
+        
+        /* Layout Adjustment for Generate Key Form */
+        #key-generator-form {
+            display: flex;
+            flex-direction: column;
+        }
+        #key-generator-form .input-section {
+            order: 1; 
+            margin-bottom: 20px;
+        }
+        #key-generator-form .output-section {
+            order: 3; 
+            margin-top: 20px;
+        }
+        #key-generator-form .button-section {
+            order: 2; 
+        }
+
+        /* Name Fields Layout */
+        .name-fields {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .name-fields input {
+            width: 50%;
+            flex: 1;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                width: 100%;
+            }
+            .side-panel {
+                order: 2; 
+                padding: 20px;
+                min-height: auto; 
+            }
+            .content-panel {
+                order: 1; 
+                padding: 30px;
+            }
+            .name-fields {
+                flex-direction: column; 
+            }
+            .name-fields input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        
+        <div class="content-panel">
+            <h2>🔑 Buat API Key Baru & Daftarkan Pengguna</h2>
+            
+            <div id="key-generator-form">
+                
+                <div class="input-section">
+                    <div class="name-fields">
+                        <input id="f_name" type="text" placeholder="Nama Depan Pengguna" required>
+                        <input id="l_name" type="text" placeholder="Nama Belakang Pengguna" required>
+                    </div>
+                    
+                    <input id="email" type="email" placeholder="Email Pengguna" required>
+
+                    <input id="service_name_key" type="text" placeholder="Masukkan Nama Aplikasi/Service" required>
+                </div>
+
+                <div class="button-section form-group">
+                    <button onclick="buatApiKey()" class="primary-btn">GENERATE KEY & DAFTARKAN</button>
+                </div>
+                
+                <div class="output-section form-group">
+                    <label for="apikey_display" style="display:block; text-align: left; margin-bottom: 5px; font-weight: 700;">Hasil API Key:</label>
+                    <textarea id="apikey_display" readonly placeholder="API Key akan muncul di sini..."></textarea>
+                    <button onclick="copyApiKey()" class="copy-btn" id="copyBtn" disabled>Copy Key ke Clipboard</button> 
+                </div>
+            </div>
+
+        </div>
+
+        <div class="side-panel">
+            <button class="nav-btn" onclick="goToAdminLogin()">Admin Panel</button>
+        </div>
+    </div>
+
+
+    <script>
+        const copyBtn = document.getElementById('copyBtn');
+
+        function setButtonsActive(isActive) {
+            copyBtn.disabled = !isActive;
+        }
+
+        function goToAdminLogin() {
+            // Asumsi file login ada di root path /login.html
+            window.location.href = '/login.html'; 
+        }
+
+        async function buatApiKey() {
+            const first_name = document.getElementById("f_name").value.trim();
+            const last_name = document.getElementById("l_name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const serviceName = document.getElementById('service_name_key').value.trim();
+            const textarea = document.getElementById('apikey_display');
+
+            if (!first_name || !last_name || !email || !serviceName) {
+                return alert("Semua field (Nama, Email, dan Nama Service) wajib diisi!");
+            }
+            
+            textarea.value = "Mendaftarkan pengguna...";
+            setButtonsActive(false);
+
+            let createdUserId = null;
+
+            // 1. Simpan User (Dapatkan user_id)
+            try {
+                const userRes = await fetch('/save-user', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ first_name, last_name, email })
+                });
+                const userData = await userRes.json();
+                
+                if (userData.success) {
+                    createdUserId = userData.user_id;
+                    textarea.value = `Pengguna didaftarkan (ID: ${createdUserId}). Generating key...`;
+                } else {
+                    textarea.value = `Gagal mendaftarkan pengguna: ${userData.message}`;
+                    alert(`Gagal mendaftarkan pengguna: ${userData.message}`);
+                    return;
+                }
+            } catch (error) {
+                console.error("Error saving user:", error);
+                textarea.value = "Gagal menghubungi server untuk mendaftarkan pengguna.";
+                alert("Gagal menghubungi server saat mendaftarkan pengguna.");
+                return;
+            }
+
+            // 2. Generate API Key dengan User ID yang sudah didapat
+            try {
+                const keyResponse = await fetch('/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        service_name: serviceName,
+                        user_id: createdUserId 
+                    })
+                });
+                const keyData = await keyResponse.json();
+                
+                if (keyData.apiKey) {
+                    textarea.value = keyData.apiKey;
+                    alert(`✅ API Key berhasil dibuat & Pengguna Berhasil Didaftarkan!\nKey: ${keyData.apiKey}`);
+                    setButtonsActive(true);
+                    // Bersihkan field
+                    document.getElementById("f_name").value = '';
+                    document.getElementById("l_name").value = '';
+                    document.getElementById("email").value = '';
+                    document.getElementById('service_name_key').value = ''; 
+                } else {
+                    textarea.value = keyData.error || "Gagal membuat API Key.";
+                    alert(`Gagal membuat API Key: ${keyData.error || 'Server Error'}.`);
+                }
+            } catch (error) {
+                console.error("Error creating API Key:", error);
+                textarea.value = "Gagal menghubungi server untuk membuat key.";
+                alert("Gagal menghubungi server saat membuat key.");
+            }
+        }
+
+        function copyApiKey() {
+            const apiKey = document.getElementById('apikey_display').value;
+            if (!apiKey || apiKey.startsWith('Mendaftarkan') || apiKey.startsWith('Gagal')) return alert("Belum ada API Key yang valid!");
+            navigator.clipboard.writeText(apiKey)
+                .then(() => alert("Key copied to clipboard! ✨"))
+                .catch(err => {
+                    console.error('Could not copy text: ', err);
+                    alert("Gagal menyalin. Coba salin manual.");
+                });
+        }
+    </script>
+</body>
+</html>
