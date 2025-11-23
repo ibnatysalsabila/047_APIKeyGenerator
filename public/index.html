@@ -213,7 +213,7 @@
     <div class="main-container">
         
         <div class="content-panel">
-            <h2>🔑 Buat API Key Baru & Daftarkan Pengguna</h2>
+            <h2>🔑 Membuat Api Key & Daftarkan Pengguna</h2>
             
             <div id="key-generator-form">
                 
@@ -275,7 +275,6 @@
 
             let createdUserId = null;
 
-            // 1. Simpan User (Dapatkan user_id)
             try {
                 const userRes = await fetch('/save-user', {
                     method: "POST",
@@ -315,7 +314,6 @@
                     textarea.value = keyData.apiKey;
                     alert(`✅ API Key berhasil dibuat & Pengguna Berhasil Didaftarkan!\nKey: ${keyData.apiKey}`);
                     setButtonsActive(true);
-                    // Bersihkan field
                     document.getElementById("f_name").value = '';
                     document.getElementById("l_name").value = '';
                     document.getElementById("email").value = '';
